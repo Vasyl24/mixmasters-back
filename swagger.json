@@ -1,0 +1,1714 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "1.1.1",
+    "title": "MixMasters backend",
+    "description": "Swagger documentation for MixMasters backend.",
+    "termsOfService": "http://www.mixmasters.com/terms/",
+    "contact": {
+      "name": "MixMasters Support",
+      "url": "http://www.mixmasters.com/support",
+      "email": "support.mixmasters@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0 license",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "consumes": ["application/json", "multiparts/form-data"],
+  "produces": ["application/json"],
+  "servers": [
+    {
+      "url": "https://mixmasters.onrender.com/api"
+    },
+    {
+      "url": "http://localhost:3000/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authorization methods endpoints"
+    },
+    {
+      "name": "Users",
+      "description": "Users methods endpoints"
+    },
+    {
+      "name": "Filters",
+      "description": "Filter collection endpoints"
+    },
+    {
+      "name": "Drinks",
+      "description": "Recipes collection endpoints"
+    }
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User registration endpoint",
+        "parameters": [],
+        "requestBody": {
+          "description": "Registration object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "409": {
+            "description": "Email in use",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User login endpoint",
+        "parameters": [],
+        "requestBody": {
+          "description": "Login object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "The email or password is incorrect",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Already logined",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/signout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Current user logout endpoint",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "204": {
+            "description": "Successful operation. No content",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Retrieving data about the current user",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/update": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Updates the username or avatar in the database.",
+        "parameters": [],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description": "User object with an new name or image",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe",
+                    "description": "New user name"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "User's avatar image"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/subscribe": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User subscription to a mailing endpoint with e-mail notification to a specified address",
+        "parameters": [],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description": "Subscription email address",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user is subscribed to a mailing list. After that, an e-mail is sent to the specified address about registration in the mailing list and an opportunity to unsubscribe from it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscribeUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "You can't use this e-mail address",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/filters/categories": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Extracting data about existing categories",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCategoriesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/filters/ingredients": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Extracting data about existing ingredients",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetIngredientsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/filters/glasses": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Extracting data about existing glasses",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetGlassesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/mainpage": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get an array of recipes by category for the homepage.",
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of recipes per category. Allowed only: 1, 2 or 3",
+            "example": "2",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "enum": [1, 2, 3]
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetRecipeByIdResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/popular": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get an array of popular recipes.",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetRecipeByIdResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/search": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get an array of recipes filtered by keyword, ingredient, recipe category. The array is formed page by page using the limit of recipes per page.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Part of the recipe name for the search query",
+            "required": false,
+            "example": "fe",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Select a category to filter the list of recipes.",
+            "required": false,
+            "example": "Cocktail",
+            "schema": {
+              "$ref": "#/components/schemas/CategoryEnum"
+            }
+          },
+          {
+            "name": "ingredient",
+            "in": "query",
+            "description": "Selecting an ingredient to filter the recipe list.",
+            "required": false,
+            "example": "Amaretto",
+            "schema": {
+              "$ref": "#/components/schemas/IngredientsEnum"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "example": "1",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of recipes per page",
+            "example": "9",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchRecipeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/{id}": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Retrieving a recipe from the database by :id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Recipe identifier",
+            "example": "639b6de9ff77d221f190c51f",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRecipeByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/own/add": {
+      "post": {
+        "tags": ["Drinks"],
+        "summary": "Adding your own recipe to the database.",
+        "consumes": ["multipart/form-data"],
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipe": {
+                    "$ref": "#/components/schemas/ObjectRecipeRequest"
+                  },
+                  "cocktail": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Cocktail image"
+                  }
+                },
+                "required": ["recipe", "cocktail"]
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "description": "Created. Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetRecipeByIdResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/own/remove": {
+      "delete": {
+        "tags": ["Drinks"],
+        "summary": "Removing your own recipe from the database.",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "The ID of the recipe to remove.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecipeIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful operation. No content",
+            "content": {}
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbiden",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/own": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get an array of the own recipes.",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetRecipeByIdResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/favorite/add": {
+      "post": {
+        "tags": ["Drinks"],
+        "summary": "Adding a recipe to favorites.",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "The ID of the recipe to add to favorites.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecipeIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRecipeByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/favorite/remove": {
+      "delete": {
+        "tags": ["Drinks"],
+        "summary": "Removing a recipe from favorites.",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Recipe Id for remove",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecipeIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful operation. No content",
+            "content": {}
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/drinks/favorite": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get an array of favorite recipes.",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetRecipeByIdResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation API error",
+            "content": {}
+          },
+          "401": {
+            "description": "Not authorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegistrationRequest": {
+        "type": "object",
+        "required": ["name", "email", "birthdate", "password"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "User's name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date",
+            "pattern": "/^([1-2][0-9]|[0][1-9]|[3][0-1])[/]([0][1-9]|[1][0-2])[/] [1-9][0-9][0-9]{2}$/",
+            "example": "10/10/2017",
+            "description": "User's birthdate"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "123456"
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "User's token",
+            "format": "JWT"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "User's DB ObjectId",
+                "example": "650ebb0b805f86eb1147f13d"
+              },
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "John Doe"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "birthdate": {
+                "type": "string",
+                "format": "date",
+                "pattern": "/^([1-2][0-9]|[0][1-9]|[3][0-1])[- /.]([0][1-9]|[1][0-2])[- /.][1-9][0-9][0-9]{2}$/",
+                "example": "10/10/2017",
+                "description": "User's birthdate"
+              },
+              "isAdult": {
+                "type": "boolean",
+                "example": true,
+                "description": "Determines whether the user is of legal age."
+              },
+              "avatarURL": {
+                "type": "string",
+                "description": "User's avatar",
+                "example": "//www.gravatar.com/avatar/395df683fb7c0f1aad22dbf40031517a?s=200&d=identicon"
+              }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "123456"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "User's token",
+            "format": "JWT"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "User's DB ObjectId",
+                "example": "650ebb0b805f86eb1147f13d"
+              },
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "John Doe"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "birthdate": {
+                "type": "string",
+                "format": "date",
+                "pattern": "/^([1-2][0-9]|[0][1-9]|[3][0-1])[- /.]([0][1-9]|[1][0-2])[- /.][1-9][0-9][0-9]{2}$/",
+                "example": "10/10/2017",
+                "description": "User's birthdate"
+              },
+              "isAdult": {
+                "type": "boolean",
+                "example": true,
+                "description": "Determines whether the user is of legal age."
+              },
+              "avatarURL": {
+                "type": "string",
+                "description": "User's avatar",
+                "example": "//www.gravatar.com/avatar/395df683fb7c0f1aad22dbf40031517a?s=200&d=identicon"
+              },
+              "subscription": {
+                "type": "string",
+                "description": "User's subscription email or Null",
+                "format": "email"
+              },
+              "createAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "User's registration date"
+              }
+            }
+          }
+        }
+      },
+      "LogoutUserResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message"
+          }
+        },
+        "example": {
+          "message": "No Content"
+        }
+      },
+      "GetUserResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User's DB ObjectId",
+            "example": "650ebb0b805f86eb1147f13d"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date",
+            "pattern": "/^([1-2][0-9]|[0][1-9]|[3][0-1])[- /.]([0][1-9]|[1][0-2])[- /.][1-9][0-9][0-9]{2}$/",
+            "example": "10/10/2017",
+            "description": "User's birthdate"
+          },
+          "isAdult": {
+            "type": "boolean",
+            "example": true,
+            "description": "Determines whether the user is of legal age."
+          },
+          "avatarURL": {
+            "type": "string",
+            "description": "User's avatar",
+            "example": "//www.gravatar.com/avatar/395df683fb7c0f1aad22dbf40031517a?s=200&d=identicon"
+          },
+          "subscription": {
+            "type": "string",
+            "description": "User's subscription email or Null",
+            "format": "email"
+          },
+          "createAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "User's registration date"
+          }
+        }
+      },
+      "UpdateUserResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "John Doe",
+                "description": "Updated user's name"
+              },
+              "avatarURL": {
+                "type": "string",
+                "example": "https://res.cloudinary.com/dotun1fbg/image/upload/v1696179992/avatars/6519a6cb104d7f54cf485827.jpg",
+                "description": "User's avatar URL"
+              }
+            }
+          }
+        }
+      },
+      "SubscribeUserRequest": {
+        "type": "object",
+        "required": ["subscription"],
+        "properties": {
+          "subscription": {
+            "type": "string",
+            "format": "email",
+            "description": "User's subscription email"
+          }
+        }
+      },
+      "SubscribeUserResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User's DB ObjectId",
+            "example": "650ebb0b805f86eb1147f13d"
+          },
+          "subscription": {
+            "type": "string",
+            "description": "User's subscription email",
+            "format": "email"
+          }
+        }
+      },
+      "GetCategoriesResponse": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "Title name of category",
+          "example": "Coffee/Tea"
+        }
+      },
+      "GetIngredientsResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Ingredient's ObjectId in the Ingredients collection",
+              "example": "639b6de9ff77d221f190c50f"
+            },
+            "Title": {
+              "type": "string",
+              "description": "Title name of ingredient",
+              "example": "Angostura bitters"
+            }
+          }
+        }
+      },
+      "GetGlassesResponse": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "Title name of glass",
+          "example": "Cocktail glass"
+        }
+      },
+      "GetRecipeByIdResponse": {
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Recipe's ObjectId in the DataBase",
+            "example": "639b6de9ff77d221f190c50f"
+          },
+          "drink": {
+            "type": "string",
+            "description": "Recipe's name",
+            "example": "Quentin"
+          },
+          "category": { "$ref": "#/components/schemas/CategoryEnum" },
+          "alcoholic": {
+            "type": "string",
+            "enum": ["Alcoholic", "Non alcoholic"],
+            "description": "Is it an alcoholic recipe or not?",
+            "example": "Non alcoholic"
+          },
+          "glass": { "$ref": "#/components/schemas/GlassesEnum" },
+          "description": {
+            "type": "string",
+            "description": "Recipe description",
+            "example": "Apello is a citrusy and refreshing cocktail that..."
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "Recipe description",
+            "example": "Apello is a citrusy and refreshing cocktail that..."
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Recipe preparation instructions",
+            "example": "Stirr. Grnish with..."
+          },
+          "drinkThumb": {
+            "type": "string",
+            "description": "An image of the prepared recipe",
+            "example": "https://res.cloudinary.com/dec1shvoo/image/upload/v1689167144/cocktails-v1/drinks/Apello.jpg"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "ObjectId of the ingredient in this coctail list",
+                  "example": "651138d8383b0acd30f1323c"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Title of the ingredient",
+                  "example": "Grapefruit juice"
+                },
+                "measure": {
+                  "type": "string",
+                  "description": "Amount of ingredient required",
+                  "example": "3 cl "
+                },
+                "ingredientId": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "description": "ObjectId of the ingredient in this Ingredients collection",
+                      "example": "64aebb7f82d96cc69e0eb4cc"
+                    },
+                    "ingredientThumb": {
+                      "type": "string",
+                      "description": "An image of the used ingredient",
+                      "example": "https://res.cloudinary.com/dec1shvoo/image/upload/v1689169605/cocktails-v1/ingredient/Grapefruit juice.png"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "favorite": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Users ObjectId who like this recipe",
+              "example": "650ed66c400790d526bef3da"
+            }
+          },
+          "owner": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Users ObjectId who added this recipe",
+            "example": "650ed66c400790d526bef3da"
+          }
+        }
+      },
+      "RecipeIdRequest": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "639b6de9ff77d221f190c50f",
+            "description": "Recipe ID"
+          }
+        }
+      },
+      "SearchRecipeResponse": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "The number of documents in the collection that satisfy the condition.",
+            "example": "50"
+          },
+          "restPages": {
+            "type": "number",
+            "description": "The number of remaining pages in the collection that satisfy the condition and limits.",
+            "example": "4"
+          },
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetRecipeByIdResponse"
+            }
+          }
+        }
+      },
+      "ObjectRecipeRequest": {
+        "type": "object",
+        "description": "Recipe object",
+        "properties": {
+          "drink": {
+            "type": "string",
+            "description": "Recipe's name",
+            "example": "Quentin"
+          },
+          "category": { "$ref": "#/components/schemas/CategoryEnum" },
+          "alcoholic": {
+            "type": "string",
+            "description": "Is it an alcoholic recipe or not?",
+            "example": "Non alcoholic",
+            "enum": ["Alcoholic", "Non alcoholic"]
+          },
+          "glass": { "$ref": "#/components/schemas/GlassesEnum" },
+          "description": {
+            "type": "string",
+            "description": "Recipe description",
+            "example": "Apello is a citrusy and refreshing cocktail that..."
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "Recipe description",
+            "example": "Apello is a citrusy and refreshing cocktail that..."
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Recipe preparation instructions",
+            "example": "Stirr. Grnish with..."
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ingredientId": {
+                  "type": "string",
+                  "description": "ObjectId of the ingredient in this Ingredients collection",
+                  "example": "64aebb7f82d96cc69e0eb4a4"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Title of the ingredient",
+                  "example": "Grapefruit juice"
+                },
+                "measure": {
+                  "type": "string",
+                  "description": "Amount of ingredient required",
+                  "example": "3 cl "
+                }
+              }
+            }
+          }
+        }
+      },
+      "IngredientsEnum": {
+        "type": "string",
+        "enum": [
+          "151 proof rum",
+          "7-Up",
+          "Absinthe",
+          "Absolut Citron",
+          "Absolut Kurant",
+          "Absolut Peppar",
+          "Absolut Vodka",
+          "Advocaat",
+          "Agave Syrup",
+          "Ale",
+          "Allspice",
+          "Almond flavoring",
+          "Amaretto",
+          "Amaro Montenegro",
+          "Angelica root",
+          "Angostura Bitters",
+          "Angostura bitters",
+          "Anis",
+          "Anisette",
+          "Aperol",
+          "Apfelkorn",
+          "Apple",
+          "Apple brandy",
+          "Apple cider",
+          "Apple juice",
+          "Applejack",
+          "Apricot Nectar",
+          "Apricot brandy",
+          "Asafoetida",
+          "Añejo rum",
+          "Bacardi Limon",
+          "Baileys irish cream",
+          "Banana",
+          "Banana liqueur",
+          "Beer",
+          "Benedictine",
+          "Berries",
+          "Bitter lemon",
+          "Bitters",
+          "Black Sambuca",
+          "Black pepper",
+          "Blackberries",
+          "Blackberry brandy",
+          "Blackcurrant cordial",
+          "Blackstrap rum",
+          "Blended Scotch",
+          "Blended whiskey",
+          "Blood Orange",
+          "Blue Curacao",
+          "Blueberry schnapps",
+          "Bourbon",
+          "Brandy",
+          "Brown sugar",
+          "Butter",
+          "Butterscotch schnapps",
+          "Cachaca",
+          "Campari",
+          "Cantaloupe",
+          "Caramel coloring",
+          "Carbonated soft drink",
+          "Carbonated water",
+          "Cardamom",
+          "Cayenne pepper",
+          "Celery salt",
+          "Chambord raspberry liqueur",
+          "Champagne",
+          "Cherries",
+          "Cherry",
+          "Cherry Heering",
+          "Cherry Juice",
+          "Cherry brandy",
+          "Cherry liqueur",
+          "Chocolate",
+          "Chocolate liqueur",
+          "Chocolate syrup",
+          "Cider",
+          "Cinnamon",
+          "Cloves",
+          "Club soda",
+          "Coca-Cola",
+          "Cocoa powder",
+          "Coconut Liqueur",
+          "Coconut liqueur",
+          "Coconut milk",
+          "Coconut syrup",
+          "Coffee",
+          "Coffee brandy",
+          "Coffee liqueur",
+          "Cognac",
+          "Cointreau",
+          "Condensed milk",
+          "Coriander",
+          "Corn syrup",
+          "Corona",
+          "Cranberries",
+          "Cranberry juice",
+          "Cranberry vodka",
+          "Cream",
+          "Cream of coconut",
+          "Creme De Banane",
+          "Creme de Banane",
+          "Creme de Cacao",
+          "Creme de Cassis",
+          "Creme de Mure",
+          "Crown Royal",
+          "Cucumber",
+          "Cumin seed",
+          "Daiquiri mix",
+          "Dark Creme de Cacao",
+          "Dark rum",
+          "Demerara Sugar",
+          "Dr. Pepper",
+          "Drambuie",
+          "Dry Vermouth",
+          "Dubonnet Rouge",
+          "Egg",
+          "Egg White",
+          "Egg white",
+          "Egg yolk",
+          "Elderflower cordial",
+          "Espresso",
+          "Everclear",
+          "Falernum",
+          "Figs",
+          "Firewater",
+          "Frangelico",
+          "Fresca",
+          "Fresh Lemon Juice",
+          "Fresh Lime Juice",
+          "Fruit",
+          "Fruit juice",
+          "Fruit punch",
+          "Galliano",
+          "Gin",
+          "Ginger",
+          "Ginger Beer",
+          "Ginger Syrup",
+          "Ginger ale",
+          "Godiva liqueur",
+          "Gold rum",
+          "Goldschlager",
+          "Grain alcohol",
+          "Grand Marnier",
+          "Grape Soda",
+          "Grape juice",
+          "Grapefruit juice",
+          "Grapes",
+          "Green Chartreuse",
+          "Green Creme de Menthe",
+          "Grenadine",
+          "Guinness stout",
+          "Half-and-half",
+          "Heavy cream",
+          "Honey",
+          "Honey syrup",
+          "Hot Chocolate",
+          "Hot Damn",
+          "Hot Sauce",
+          "Ice",
+          "Iced tea",
+          "Irish cream",
+          "Irish whiskey",
+          "Islay single malt Scotch",
+          "Jack Daniels",
+          "Jagermeister",
+          "Jello",
+          "Jim Beam",
+          "Johnnie Walker",
+          "Jägermeister",
+          "Kahlua",
+          "Kiwi",
+          "Kiwi liqueur",
+          "Kool-Aid",
+          "Lager",
+          "Lavender",
+          "Lemon",
+          "Lemon Peel",
+          "Lemon juice",
+          "Lemon peel",
+          "Lemon vodka",
+          "Lemon-lime soda",
+          "Lemonade",
+          "Light cream",
+          "Light rum",
+          "Lillet",
+          "Lillet Blanc",
+          "Lime",
+          "Lime juice",
+          "Lime peel",
+          "Lime vodka",
+          "Limeade",
+          "Malibu rum",
+          "Mango",
+          "Maple syrup",
+          "Maraschino Cherry",
+          "Maraschino Liqueur",
+          "Maraschino cherry",
+          "Maraschino liqueur",
+          "Marshmallows",
+          "Melon Liqueur",
+          "Mezcal",
+          "Midori melon liqueur",
+          "Milk",
+          "Mint",
+          "Mint syrup",
+          "Mountain Dew",
+          "Nutmeg",
+          "Olive",
+          "Olive Brine",
+          "Orange",
+          "Orange Curacao",
+          "Orange Juice",
+          "Orange Peel",
+          "Orange bitters",
+          "Orange juice",
+          "Orange peel",
+          "Orange spiral",
+          "Oreo cookie",
+          "Orgeat syrup",
+          "Ouzo",
+          "Papaya",
+          "Passion fruit juice",
+          "Passion fruit syrup",
+          "Passoa",
+          "Peach Bitters",
+          "Peach Vodka",
+          "Peach brandy",
+          "Peach nectar",
+          "Peach schnapps",
+          "Peachtree schnapps",
+          "Pepper",
+          "Peppermint schnapps",
+          "Pepsi Cola",
+          "Pernod",
+          "Peychaud bitters",
+          "Pina colada mix",
+          "Pineapple",
+          "Pineapple Syrup",
+          "Pineapple juice",
+          "Pink lemonade",
+          "Pisang Ambon",
+          "Pisco",
+          "Pomegranate juice",
+          "Port",
+          "Powdered sugar",
+          "Prosecco",
+          "Raspberry Liqueur",
+          "Raspberry syrup",
+          "Raspberry vodka",
+          "Red Chili Flakes",
+          "Red wine",
+          "Ricard",
+          "Root beer",
+          "Rose",
+          "Rosemary",
+          "Rosemary Syrup",
+          "Roses sweetened lime juice",
+          "Rosso Vermouth",
+          "Ruby Port",
+          "Rum",
+          "Rumple Minze",
+          "Rye Whiskey",
+          "Rye whiskey",
+          "Salt",
+          "Sambuca",
+          "Sarsaparilla",
+          "Schweppes Russchian",
+          "Scotch",
+          "Sherbet",
+          "Sherry",
+          "Sirup of roses",
+          "Sloe gin",
+          "Soda Water",
+          "Soda water",
+          "Sour mix",
+          "Southern Comfort",
+          "Soy Sauce",
+          "Spiced rum",
+          "Sprite",
+          "St. Germain",
+          "Strawberries",
+          "Strawberry liqueur",
+          "Strawberry schnapps",
+          "Sugar",
+          "Sugar syrup",
+          "Surge",
+          "Sweet Vermouth",
+          "Sweet and Sour",
+          "Sweet and sour",
+          "Tabasco sauce",
+          "Tea",
+          "Tennessee whiskey",
+          "Tequila",
+          "Thyme",
+          "Tia maria",
+          "Tomato juice",
+          "Tonic Water",
+          "Tonic water",
+          "Triple sec",
+          "Vanilla",
+          "Vanilla extract",
+          "Vanilla ice-cream",
+          "Vanilla syrup",
+          "Vanilla vodka",
+          "Vermouth",
+          "Vodka",
+          "Water",
+          "Watermelon",
+          "Whipped cream",
+          "Whipping cream",
+          "Whiskey",
+          "Whisky",
+          "White Creme de Menthe",
+          "White Rum",
+          "White Wine",
+          "White rum",
+          "Wine",
+          "Worcestershire Sauce",
+          "Wormwood",
+          "Yellow Chartreuse",
+          "Yoghurt",
+          "Yukon Jack",
+          "Zima"
+        ],
+        "wrapped": true,
+        "description": "Ingredients list for the recipe",
+        "example": "Absinthe"
+      },
+      "CategoryEnum": {
+        "type": "string",
+        "enum": [
+          "Beer",
+          "Cocktail",
+          "Cocoa",
+          "Coffee/Tea",
+          "Homemade Liqueur",
+          "Ordinary Drink",
+          "Other/Unknown",
+          "Punch/Party Drink",
+          "Shake",
+          "Shot",
+          "Soft Drink"
+        ],
+        "wrapped": true,
+        "description": "Categories list for the recipe",
+        "example": "Cocktail"
+      },
+      "GlassesEnum": {
+        "type": "string",
+        "enum": [
+          "Balloon Glass",
+          "Beer Glass",
+          "Beer mug",
+          "Beer pilsner",
+          "Brandy snifter",
+          "Champagne flute",
+          "Cocktail glass",
+          "Coffee mug",
+          "Collins glass",
+          "Copper Mug",
+          "Cordial glass",
+          "Coupe Glass",
+          "Highball glass",
+          "Hurricane glass",
+          "Irish coffee cup",
+          "Jar",
+          "Margarita glass",
+          "Margarita/Coupette glass",
+          "Martini Glass",
+          "Mason jar",
+          "Nick and Nora Glass",
+          "Old-fashioned glass",
+          "Parfait glass",
+          "Pint glass",
+          "Pitcher",
+          "Pousse cafe glass",
+          "Punch bowl",
+          "Shot glass",
+          "Whiskey Glass",
+          "Whiskey sour glass",
+          "White wine glass",
+          "Wine Glass"
+        ],
+        "wrapped": true,
+        "description": "Glasses list for the recipe",
+        "example": "Cocktail glass"
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
